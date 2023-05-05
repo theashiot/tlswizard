@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="476.0" prefWidth="642.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fly.wild.wizards.tlswizard.TLSWizardViewController">
+   <children>
+      <VBox layoutX="78.0" layoutY="74.0" prefHeight="316.0" prefWidth="374.0">
+         <children>
+            <VBox prefHeight="113.0" prefWidth="374.0">
+               <children>
+                  <Label text="For my server running at the IP">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="serverIP" promptText="IP Address" text="127.0.0.1">
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </TextField>
+                  <Label fx:id="errorLabelIP" prefHeight="16.0" prefWidth="191.0" text="Incorrect IP address format" textFill="RED" visible="false" />
+               </children>
+            </VBox>
+            <VBox prefHeight="98.0" prefWidth="374.0" spacing="5.0">
+               <children>
+                  <Label text="I want to configure">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <RadioButton fx:id="oneWayTLS" mnemonicParsing="false" selected="true" text="One-way TLS" toggleGroup="$tlsType">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                     <toggleGroup>
+                        <ToggleGroup fx:id="tlsType" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="twoWayTLS" mnemonicParsing="false" text="Two-way TLS" toggleGroup="$tlsType">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </RadioButton>
+               </children>
+               <padding>
+                  <Insets right="5.0" top="10.0" />
+               </padding>
+            </VBox>
+            <VBox prefHeight="163.0" prefWidth="347.0" spacing="5.0">
+               <children>
+                  <Label text="for">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Label>
+                  <RadioButton fx:id="applications" mnemonicParsing="false" selected="true" text="applications" toggleGroup="$secure">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="secure" />
+                     </toggleGroup>
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </RadioButton>
+                  <RadioButton fx:id="managementInterfaces" mnemonicParsing="false" text="management interfaces" toggleGroup="$secure">
+                     <padding>
+                        <Insets left="20.0" />
+                     </padding>
+                  </RadioButton>
+                  <Button fx:id="ButtonHomeNext" mnemonicParsing="false" onAction="#handleButtonHomeNextEvent" prefHeight="24.0" prefWidth="71.0" text="Next -&gt;" />
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
