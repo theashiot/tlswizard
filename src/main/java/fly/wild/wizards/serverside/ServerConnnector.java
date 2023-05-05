@@ -103,7 +103,7 @@ public class ServerConnnector {
 		 * /subsystem=elytron/key-store=exampleKeyStore:add(
 		 * path=exampleserver.keystore.pkcs12, 
 		 * relative-to=jboss.server.config.dir,
-		 * credential-reference={clear-text=secret},type=PKCS12) 
+		 * credential-reference={clear-text=keystorepass},type=PKCS12) 
 		 */
 		
 		ModelNode keyStore = new ModelNode();
@@ -119,7 +119,7 @@ public class ServerConnnector {
 		 * /subsystem=elytron/key-store=exampleKeyStore
 		 * :generate-key-pair(alias=localhost,algorithm=RSA,
 		 * key-size=2048,validity=365,credential-reference=
-		 * {clear-text=secret},distinguished-name="CN=localhost")
+		 * {clear-text=keystorepass},distinguished-name="CN=localhost")
 		 */
 		
 		ModelNode generateCertificate = new ModelNode();
@@ -265,7 +265,7 @@ public class ServerConnnector {
 		}
 		else if (tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.MANAGEMENT_INTERFACES)) {
 			configurationDetails += "Reload the server now to secure the management interfaces with TLS\n" +
-					"Command to reload the server:\n *Nix: wildfly_home/bin/jboss-cli.sh --connect --command=\":reload\"\n" +
+					"Command to reload the server:\n *nix: wildfly_home/bin/jboss-cli.sh --connect --command=\":reload\"\n" +
 					"Windows: wildfly_home\\bin\\jboss-cli.sh --connect --command=\\\":reload\\\"" + "\n" +
 					"After you reload the server, you can check TLS by navigating to https://" + this.ipAddress + ":9993\n";
 		}
