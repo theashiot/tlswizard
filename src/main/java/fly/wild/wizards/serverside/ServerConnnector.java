@@ -3,9 +3,12 @@ package fly.wild.wizards.serverside;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 
 import org.jboss.as.controller.client.ModelControllerClient;
+import org.jboss.as.controller.client.ModelControllerClientConfiguration;
 import org.jboss.as.controller.client.OperationBuilder;
 import org.jboss.as.controller.client.helpers.ClientConstants;
 import org.jboss.dmr.ModelNode;
@@ -16,7 +19,7 @@ import fly.wild.wizards.tlswizard.controller.TLSConfiguration;
 public class ServerConnnector {
 
 	private String ipAddress;
-	private final int DMR_PORT = 9999;
+	private final int DMR_PORT = 8080;
 	
 	private String distinguishedName;
 	private String alias;
@@ -66,9 +69,15 @@ public class ServerConnnector {
 	private String padding;
 	private String keyStoreFileName;
 	
+	Map<String, String> ENABLED_LOCAL_AUTH; 
+	Map<String, String> DISABLED_LOCAL_AUTH; 
 	
 	private OneWayTLSConfigurationConfiguration oneWayTLSConfiguration;
 	private TLSConfiguration tlsConfiguration;
+	
+	
+	String SASL_DISALLOWED_MECHANISMS = "SASL_DISALLOWED_MECHANISMS";
+    String JBOSS_LOCAL_USER = "JBOSS-LOCAL-USER";
 	
 	public ServerConnnector (TLSConfiguration tlsConfiguration, OneWayTLSConfigurationConfiguration oneWayTLSConfiguration) {
 		UUID uuid=UUID.randomUUID();
@@ -92,6 +101,9 @@ public class ServerConnnector {
 				";" + "L=" + this.oneWayTLSConfiguration.getCityOrLocalityValue() +
 				";" + "ST=" + this.oneWayTLSConfiguration.getStateOrProvinceValue() +
 				";" + "C=" + this.oneWayTLSConfiguration.getCountryCodeValue();
+		
+		this.ENABLED_LOCAL_AUTH = Collections.emptyMap();
+		this.DISABLED_LOCAL_AUTH = Collections.singletonMap(SASL_DISALLOWED_MECHANISMS, JBOSS_LOCAL_USER);
 	}
 	
 	
@@ -166,8 +178,10 @@ public class ServerConnnector {
 		serverSSLContext.get(STRING_KEY_MANAGER_ATTRIBUTE).set(this.genKeyManagerName);		
 				
 		try {
+			
+					
 			this.client = ModelControllerClient.Factory.create (InetAddress.getByName(this.ipAddress), 
-					DMR_PORT);
+					DMR_PORT, null, this.ENABLED_LOCAL_AUTH);
 			
 			client.execute(new OperationBuilder(keyStore).build());
 			client.execute(new OperationBuilder(generateCertificate).build());
@@ -211,7 +225,7 @@ public class ServerConnnector {
 
 		try {
 			this.client = ModelControllerClient.Factory.create (InetAddress.getByName(this.ipAddress), 
-					DMR_PORT);
+					DMR_PORT, null, this.ENABLED_LOCAL_AUTH);
 			
 			client.execute(new OperationBuilder(undertow).build());
 			
@@ -241,7 +255,7 @@ public class ServerConnnector {
 		
 		try {
 			this.client = ModelControllerClient.Factory.create (InetAddress.getByName(this.ipAddress), 
-					DMR_PORT);
+					DMR_PORT, null, this.ENABLED_LOCAL_AUTH);
 			
 			client.execute(new OperationBuilder(coreServiceSSLContext).build());
 			client.execute(new OperationBuilder(coreServiceSecureSocketBinding).build());
@@ -279,4 +293,6 @@ public class ServerConnnector {
 		
 		return configurationDetails;
 	}
+	
+
 }
