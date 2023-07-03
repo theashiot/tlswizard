@@ -13,6 +13,7 @@ Use this application to configure one-way TLS for applications deployed on WildF
 
 .Procedure
 
+////
 . Configure management interface to enable JBoss DMR API.
 
 .. Add the following element to `<management-interfaces>` `in standalone.xml`.
@@ -39,7 +40,9 @@ Use this application to configure one-way TLS for applications deployed on WildF
 </socket-binding-group>
 ---- 
 
-. Start the server.
+////
+
+. Start WildFly.
 
 . Navigate to the directory `tlswizard`.
 
