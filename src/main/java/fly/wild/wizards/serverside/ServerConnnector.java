@@ -19,7 +19,7 @@ import fly.wild.wizards.tlswizard.controller.TLSConfiguration;
 public class ServerConnnector {
 
 	private String ipAddress;
-	private final int DMR_PORT = 8080;
+	private final int DMR_PORT = 9990;
 	
 	private String distinguishedName;
 	private String alias;
