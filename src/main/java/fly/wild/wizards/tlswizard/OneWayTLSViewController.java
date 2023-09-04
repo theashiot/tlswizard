@@ -2,7 +2,7 @@ package fly.wild.wizards.tlswizard;
 
 import java.io.IOException;
 
-import fly.wild.wizards.serverside.ServerConnnector;
+import fly.wild.wizards.serverside.ServerConnector;
 import fly.wild.wizards.tlswizard.controller.OneWayTLSConfigurationConfiguration;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -83,7 +83,7 @@ public class OneWayTLSViewController {
 			System.out.println (oneWayTLSConfiguration.toString());
 			System.out.println (App.tlsConfiguration.getServerIP());
 			
-			ServerConnnector serverConnector = new ServerConnnector(App.tlsConfiguration, oneWayTLSConfiguration);
+			ServerConnector serverConnector = new ServerConnector(App.tlsConfiguration, oneWayTLSConfiguration);
 			boolean success = serverConnector.configureOneWayTLS();
 			if (success) {
 				result.setText(serverConnector.getConfigurationDetails());

@@ -8,6 +8,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <version.javafx-controls>19</version.javafx-controls>
+        <version.javafx-fxml>13</version.javafx-fxml>
+    	<version.wildfly-controller-client>15.0.26.Final-redhat-00001</version.wildfly-controller-client>
+    	<version.wildfly-core-management-client>15.0.26.Final-redhat-00001</version.wildfly-core-management-client>
+  		<version.wildfly-protocol>15.0.26.Final-redhat-00001</version.wildfly-protocol>
+  		<version.wildfly-controller>15.0.19.Final-redhat-00001</version.wildfly-controller>
+  		<version.wildfly-cli>15.0.25.Final-redhat-00001</version.wildfly-cli>
     </properties>
     
     <repositories>
@@ -70,19 +77,19 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>19</version>
+            <version>${version.javafx-controls}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>13</version>
+            <version>${version.javafx-fxml}</version>
         </dependency>
  
  		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-controller-client -->
 		<dependency>
 		    <groupId>org.wildfly.core</groupId>
 		    <artifactId>wildfly-controller-client</artifactId>
-		    <version>15.0.26.Final-redhat-00001</version>
+		    <version>${version.wildfly-controller-client}</version>
 		</dependency>
 		
 		
@@ -90,36 +97,28 @@
 		<dependency>
 		    <groupId>org.wildfly.core</groupId>
 		    <artifactId>wildfly-core-management-client</artifactId>
-		    <version>15.0.26.Final-redhat-00001</version>
+		    <version>${version.wildfly-core-management-client}</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-protocol -->
 		<dependency>
 		    <groupId>org.wildfly.core</groupId>
 		    <artifactId>wildfly-protocol</artifactId>
-		    <version>15.0.26.Final-redhat-00001</version>
+		    <version>${version.wildfly-protocol}</version>
 		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.wildfly.security/wildfly-elytron -->
-		<dependency>
-		    <groupId>org.wildfly.security</groupId>
-		    <artifactId>wildfly-elytron</artifactId>
-		    <version>2.0.0.Final-redhat-00001</version>
-		</dependency>
-		
 		
 		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-controller -->
 		<dependency>
 		    <groupId>org.wildfly.core</groupId>
 		    <artifactId>wildfly-controller</artifactId>
-		    <version>15.0.19.Final-redhat-00001</version>
+		    <version>${version.wildfly-controller}</version>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-cli -->
 		<dependency>
 		    <groupId>org.wildfly.core</groupId>
 		    <artifactId>wildfly-cli</artifactId>
-		    <version>15.0.25.Final-redhat-00001</version>
+		    <version>${version.wildfly-cli}</version>
 		</dependency>
 		
 

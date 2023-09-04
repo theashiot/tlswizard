@@ -14,7 +14,7 @@ import org.jboss.as.cli.operation.impl.DefaultOperationRequestBuilder;
 import fly.wild.wizards.tlswizard.controller.OneWayTLSConfigurationConfiguration;
 import fly.wild.wizards.tlswizard.controller.TLSConfiguration;
 
-public class ServerConnnector {
+public class ServerConnector {
 
 	private String ipAddress;	
 	private String distinguishedName;
@@ -34,8 +34,9 @@ public class ServerConnnector {
 	private ControllerAddress connectionAddress;
 	private OneWayTLSConfigurationConfiguration oneWayTLSConfiguration;
 	private TLSConfiguration tlsConfiguration;
+	private final int connectionTimeOut = 5000;
 	
-	public ServerConnnector (TLSConfiguration tlsConfiguration, OneWayTLSConfigurationConfiguration oneWayTLSConfiguration) {
+	public ServerConnector(TLSConfiguration tlsConfiguration, OneWayTLSConfigurationConfiguration oneWayTLSConfiguration) {
 		LocalTime localTime = LocalTime.now();
 		UUID uuid=UUID.randomUUID();
 		
@@ -57,73 +58,72 @@ public class ServerConnnector {
 				";" + "ST=" + this.oneWayTLSConfiguration.getStateOrProvinceValue() +
 				";" + "C=" + this.oneWayTLSConfiguration.getCountryCodeValue();
 
-		this.logMessage = new StringBuilder("This is the TLSWizard run of "+localTime.toString()+"\n");				
+		this.logMessage = new StringBuilder("This is the TLSWizard run of "+localTime.toString()+"\n");
 		connectionAddress = new ControllerAddress("remote+http",ipAddress,9990);	
 		
 	}
 	
 	
-	public boolean configureOneWayTLS () {
+	public boolean configureOneWayTLS() {
 		
 		boolean success = true;
 		
 		// Create a key store		
 		DefaultOperationRequestBuilder keyStoreBuilder = this.buildKeyStoreNode();
 		// Generate a key pair
-		DefaultOperationRequestBuilder generateCertificateBuilder = buildGenerateCertificateBuilder ();
+		DefaultOperationRequestBuilder generateCertificateBuilder = buildGenerateCertificateBuilder();
 		// Persist the key pair		
-		DefaultOperationRequestBuilder storeCertificateBuilder = buildStoreCertificateBuilder ();
+		DefaultOperationRequestBuilder storeCertificateBuilder = buildStoreCertificateBuilder();
 		//Create a key manager
-		DefaultOperationRequestBuilder keyManagerBuilder = buikdKeyManagerBuilder ();
+		DefaultOperationRequestBuilder keyManagerBuilder = buikdKeyManagerBuilder();
 		//Configure SSL Context
-		DefaultOperationRequestBuilder serverSSLContextBuilder = buildServerSSLContextBuilder ();
+		DefaultOperationRequestBuilder serverSSLContextBuilder = buildServerSSLContextBuilder();
 		
 		try {
 			
-			ModelControllerClient client = ModelControllerClientFactory.CUSTOM.getClient(connectionAddress, null, false, null, false, 0, null, null, null);
-			
+			ModelControllerClient client = getClientWithNoAuth();		
 			final ModelNode keytore = client.execute(keyStoreBuilder.buildRequest());
 			this.logMessage.append("Creating a key store\n");
-			this.logMessage.append(keytore.toString()+"\n");
+			this.logMessage.append(keytore.toString()).append("\n");
 			
 			final ModelNode cert = client.execute(generateCertificateBuilder.buildRequest());
 			this.logMessage.append("Generating certificate\n");
-			this.logMessage.append(cert.toString()+"\n");
+			this.logMessage.append(cert.toString()).append("\n");
 			
 			final ModelNode store = client.execute(storeCertificateBuilder.buildRequest());
 			this.logMessage.append("Storing certificate\n");
-			this.logMessage.append(store.toString()+"\n");
+			this.logMessage.append(store.toString()).append("\n");
 			
 			final ModelNode keyMan = client.execute(keyManagerBuilder.buildRequest());
 			this.logMessage.append("Creating key manager\n");
-			this.logMessage.append(keyMan.toString()+"\n");
+			this.logMessage.append(keyMan.toString()).append("\n");
 			
 			final ModelNode sslCon = client.execute(serverSSLContextBuilder.buildRequest());
 			this.logMessage.append("Configuring SSLContext\n");
-			this.logMessage.append(sslCon.toString()+"\n");			
+			this.logMessage.append(sslCon.toString()).append("\n");			
 			
-		} catch (IOException | OperationFormatException e) {
+		} catch(IOException | OperationFormatException e) {
 			success = false;
 			e.printStackTrace();
 		}
 		
 		
-		if (tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.APPLICATIONS)) {
-			System.out.println ("Applications selected");
+		if(tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.APPLICATIONS)) {
+			System.out.println("Applications selected");
 			configureUndertow(); 
 		}
 		
 		else {
-			System.out.println ("Management interface selected");
-			configureManagementInterface ();
+			System.out.println("Management interface selected");
+			configureManagementInterface();
 		}
-		reloadServer ();
+		reloadServer();
 			
 		System.out.println(this.logMessage.toString());
 		return success;
 	}
 	
-	private void configureUndertow () {
+	private void configureUndertow() {
 		
 		/*
 		 * Sample management CLI commands
@@ -137,23 +137,23 @@ public class ServerConnnector {
 		undertowBuilder.addNode(Util.HTTPS_LISTENER,STRING_HTTPS_LISTENER_VALUE);
 		undertowBuilder.addProperty(Util.NAME,Util.SSL_CONTEXT);
 		undertowBuilder.addProperty(Util.VALUE,this.genServerSSLContext);
-		System.out.println (undertowBuilder.toString());
+		System.out.println(undertowBuilder.toString());
 
 		try {
-			ModelControllerClient client = ModelControllerClientFactory.CUSTOM.getClient(connectionAddress, null, false, null, false, 0, null, null, null);
+			ModelControllerClient client = getClientWithNoAuth();
 			ModelNode undertow = client.execute(undertowBuilder.buildRequest());
 			this.logMessage.append("Updating Undertow\n");
-			this.logMessage.append(undertow.toString()+"\n");
-		} catch (IOException e) {
+			this.logMessage.append(undertow.toString()).append("\n");
+		} catch(IOException e) {
 			e.printStackTrace();
-		} catch (OperationFormatException e) {
+		} catch(OperationFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 	
-	private void configureManagementInterface () {
+	private void configureManagementInterface() {
 	
 		DefaultOperationRequestBuilder coreServiceSSLContextBuilder = new DefaultOperationRequestBuilder();
 		coreServiceSSLContextBuilder.setOperationName(Util.WRITE_ATTRIBUTE);
@@ -171,15 +171,15 @@ public class ServerConnnector {
 
 		try {
 			
-			ModelControllerClient client = ModelControllerClientFactory.CUSTOM.getClient(connectionAddress, null, false, null, false, 0, null, null, null);
+			ModelControllerClient client = getClientWithNoAuth();
 			ModelNode coreService = client.execute(coreServiceSSLContextBuilder.buildRequest());
 			this.logMessage.append("Configuring coreServiceSSLContext services\n");
-			this.logMessage.append(coreService.toString()+"\n");
+			this.logMessage.append(coreService.toString()).append("\n");
 			ModelNode secureSocketBinding = client.execute(coreServiceSecureSocketBindingBuilder.buildRequest());
 			this.logMessage.append("Configuring secure socket binding\n");
-			this.logMessage.append(secureSocketBinding.toString()+"\n");
+			this.logMessage.append(secureSocketBinding.toString()).append("\n");
 			
-		} catch (IOException | OperationFormatException e) {
+		} catch(IOException | OperationFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -187,29 +187,29 @@ public class ServerConnnector {
 		
 	}
 	
-	public void reloadServer () {
+	public void reloadServer() {
 		DefaultOperationRequestBuilder reloadBuilder = new DefaultOperationRequestBuilder();
 		reloadBuilder.setOperationName(Util.RELOAD);
 		
 		ModelControllerClient client;
 		try {
-			client = ModelControllerClientFactory.CUSTOM.getClient(connectionAddress, null, false, null, false, 0, null, null, null);
+			client = getClientWithNoAuth();
 			client.execute(reloadBuilder.buildRequest());
 			this.logMessage.append("Server reloaded\n");
-		} catch (IOException | OperationFormatException e) {
+		} catch(IOException | OperationFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public String getConfigurationDetails () {
+	public String getConfigurationDetails() {
 		StringBuilder configurationDetails = new StringBuilder();
 		
-		if (tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.APPLICATIONS)) {
+		if(tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.APPLICATIONS)) {
 			configurationDetails.append("Check TLS by navigating to https://" + this.ipAddress +":8443\n");
 					
 		}
-		else if (tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.MANAGEMENT_INTERFACES)) {
+		else if(tlsConfiguration.getSecure().equals(TLSConfiguration.Secure.MANAGEMENT_INTERFACES)) {
 			configurationDetails.append("Check TLS by navigating to https://" + this.ipAddress + ":9990\n");
 		}
 			
@@ -221,7 +221,7 @@ public class ServerConnnector {
 		return configurationDetails.toString();
 	}
 	
-	DefaultOperationRequestBuilder buildKeyStoreNode () {
+	DefaultOperationRequestBuilder buildKeyStoreNode() {
 	
 		/*
 		 * Sample management CLI commands
@@ -237,17 +237,16 @@ public class ServerConnnector {
 		keyStoreBuilder.addNode(Util.KEY_STORE,this.genKeyStoreName);
 		keyStoreBuilder.addProperty(Util.PATH,keyStoreFileName);
 		keyStoreBuilder.addProperty(Util.RELATIVE_TO,Util.JBOSS_SERVER_CONFIG_DIR);
-        
 		ModelNode mn = new ModelNode();
-        mn.get(Util.CLEAR_TEXT).set(STRING_CLEAR_TEXT_VALUE_KEY_STORE);            
-        // Because credential reference is not a String property, we need to  set its value this way
-        keyStoreBuilder.getModelNode().get(Util.CREDENTIAL_REFERENCE).set(mn);
-        keyStoreBuilder.addProperty(Util.TYPE,"PKCS12");
-        
-        return keyStoreBuilder;
+		mn.get(Util.CLEAR_TEXT).set(STRING_CLEAR_TEXT_VALUE_KEY_STORE);            
+		
+		// Because credential reference is not a String property, we need to  set its value this way
+		keyStoreBuilder.getModelNode().get(Util.CREDENTIAL_REFERENCE).set(mn);
+		keyStoreBuilder.addProperty(Util.TYPE,"PKCS12");
+		return keyStoreBuilder;
 	}
 	
-	DefaultOperationRequestBuilder buildGenerateCertificateBuilder () {
+	DefaultOperationRequestBuilder buildGenerateCertificateBuilder() {
 		
 		/*
 		 * Sample management CLI commands		 * 
@@ -266,15 +265,15 @@ public class ServerConnnector {
 		generateCertificateBuilder.addProperty(Util.KEY_SIZE,Integer.toString(INT_KEY_SIZE_VALUE));
 		generateCertificateBuilder.addProperty(Util.VALIDITY,Integer.toString(INT_VALIDITY_VALUE));
 		ModelNode mn = new ModelNode();
-        mn.get(Util.CLEAR_TEXT).set(STRING_CLEAR_TEXT_VALUE_KEY_STORE);            
-        // Because credential reference is not a String property, we need to  set its value this way
+		mn.get(Util.CLEAR_TEXT).set(STRING_CLEAR_TEXT_VALUE_KEY_STORE);            
+		// Because credential reference is not a String property, we need to  set its value this way
 		generateCertificateBuilder.getModelNode().get(Util.CREDENTIAL_REFERENCE).set(mn);
 		generateCertificateBuilder.addProperty(Util.DISTINGUISHED_NAME,this.distinguishedName);
 		
 		return generateCertificateBuilder;
 	}
 	
-	DefaultOperationRequestBuilder buildStoreCertificateBuilder () {
+	DefaultOperationRequestBuilder buildStoreCertificateBuilder() {
 
 		/*
 		 * Sample management CLI commands
@@ -289,7 +288,7 @@ public class ServerConnnector {
 		return storeCertificateBuilder;
 	}
 
-	DefaultOperationRequestBuilder buikdKeyManagerBuilder () {
+	DefaultOperationRequestBuilder buikdKeyManagerBuilder() {
 
 		/*
 		 * Sample management CLI commands
@@ -303,12 +302,12 @@ public class ServerConnnector {
 		keyManagerBuilder.addProperty(Util.KEY_STORE,this.genKeyStoreName);	
 		ModelNode mn = new ModelNode();
 		mn.get(Util.CLEAR_TEXT).set(STRING_CLEAR_TEXT_VALUE_KEY_STORE);
-    	keyManagerBuilder.getModelNode().get(Util.CREDENTIAL_REFERENCE).set(mn);
-    	
-    	return keyManagerBuilder;
+		keyManagerBuilder.getModelNode().get(Util.CREDENTIAL_REFERENCE).set(mn);
+		
+		return keyManagerBuilder;
 	}
 	
-	DefaultOperationRequestBuilder buildServerSSLContextBuilder () {
+	DefaultOperationRequestBuilder buildServerSSLContextBuilder() {
 		/*
 		 * Sample management CLI commands
 		 * /subsystem=elytron/server-ssl-context=examplehttpsSSC:add(key-manager=exampleKeyManager, protocols=["TLSv1.2"])
@@ -320,5 +319,10 @@ public class ServerConnnector {
 		serverSSLContextBuilder.addProperty(Util.KEY_MANAGER,this.genKeyManagerName);
 		
 		return serverSSLContextBuilder;
+	}
+	
+	ModelControllerClient getClientWithNoAuth() throws IOException {
+		ModelControllerClient client = ModelControllerClientFactory.CUSTOM.getClient(connectionAddress, null, false, null, false, connectionTimeOut, null, null, null);
+		return client;
 	}
 }
