@@ -10,11 +10,11 @@
         <maven.compiler.target>11</maven.compiler.target>
         <version.javafx-controls>19</version.javafx-controls>
         <version.javafx-fxml>13</version.javafx-fxml>
-    	<version.wildfly-controller-client>15.0.26.Final-redhat-00001</version.wildfly-controller-client>
-    	<version.wildfly-core-management-client>15.0.26.Final-redhat-00001</version.wildfly-core-management-client>
-  		<version.wildfly-protocol>15.0.26.Final-redhat-00001</version.wildfly-protocol>
-  		<version.wildfly-controller>15.0.19.Final-redhat-00001</version.wildfly-controller>
-  		<version.wildfly-cli>15.0.25.Final-redhat-00001</version.wildfly-cli>
+        <version.wildfly-controller-client>15.0.26.Final-redhat-00001</version.wildfly-controller-client>
+        <version.wildfly-core-management-client>15.0.26.Final-redhat-00001</version.wildfly-core-management-client>
+        <version.wildfly-protocol>15.0.26.Final-redhat-00001</version.wildfly-protocol>
+        <version.wildfly-controller>15.0.19.Final-redhat-00001</version.wildfly-controller>
+        <version.wildfly-cli>15.0.25.Final-redhat-00001</version.wildfly-cli>
     </properties>
     
     <repositories>
