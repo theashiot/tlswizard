@@ -13,32 +13,6 @@ Use this application to configure one-way TLS for applications deployed on WildF
 
 .Procedure
 
-. Configure management interface to enable JBoss DMR API.
-
-.. Add the following element to `<management-interfaces>` `in standalone.xml`.
-+
-[source,xml,options="nowrap"]
-----
-<management-interfaces>
-	...
-    <!-- Add the following native-interface -->
-    <native-interface>
-        <socket-binding native="management-native"/>
-    </native-interface>
-</management-interface>
-----
-
-.. Add the following socket binding:
-+
-[source,xml,options="nowrap"]
-----
-<socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
-	...
-	<socket-binding name="management-native" interface="management" port="9999"/>
-	...
-</socket-binding-group>
----- 
-
 . Start the server.
 
 . Navigate to the directory `tlswizard`.
@@ -64,16 +38,11 @@ This launches the TLS Wizard.
 .. Enter a name for the key store to create with `.pkcs12` extension.
 .. Enter details for the certificate to be generated. If you don't, all the values are set to `unknown`.
 .. Click *Configure TLS*. 
-.. Wait till you get a success message.
 .. To verify TLS, do this:
 
-***  If you secure applications: 
-... Reload the server.
-... Navigate to link:https://localhost:8443[]. Inspect the certificate. The `Common Name (CN)` should match the first and last name you entered. 
+***  If you secure applications: Navigate to link:https://localhost:8443[]. Inspect the certificate. The `Common Name (CN)` should match the first and last name you entered. 
 
-*** If you secured the management interface:
-... Shutdown and start the server.
-... Navigate to link:http://localhost:9990[]. You will be redirected to `localhost:9993` Inspect the certificate. The `Common Name (CN)` should match the first and last name you entered.
+*** If you secured the management interface: Navigate to link:http://localhost:9990[]. You will be redirected to `localhost:9993` Inspect the certificate. The `Common Name (CN)` should match the first and last name you entered.
 
 ** That's it! one-way TLS is now enabled.
 

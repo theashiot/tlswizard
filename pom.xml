@@ -8,24 +8,122 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <version.javafx-controls>19</version.javafx-controls>
+        <version.javafx-fxml>13</version.javafx-fxml>
+        <version.wildfly-controller-client>15.0.26.Final-redhat-00001</version.wildfly-controller-client>
+        <version.wildfly-core-management-client>15.0.26.Final-redhat-00001</version.wildfly-core-management-client>
+        <version.wildfly-protocol>15.0.26.Final-redhat-00001</version.wildfly-protocol>
+        <version.wildfly-controller>15.0.19.Final-redhat-00001</version.wildfly-controller>
+        <version.wildfly-cli>15.0.25.Final-redhat-00001</version.wildfly-cli>
     </properties>
+    
+    <repositories>
+        <repository>
+            <id>jboss-public-maven-repository</id>
+            <name>JBoss Public Maven Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <layout>default</layout>
+        </repository>
+        <repository>
+            <id>redhat-ga-maven-repository</id>
+            <name>Red Hat GA Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>jboss-public-maven-repository</id>
+            <name>JBoss Public Maven Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>redhat-ga-maven-repository</id>
+            <name>Red Hat GA Maven Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+    
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>19</version>
+            <version>${version.javafx-controls}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>13</version>
+            <version>${version.javafx-fxml}</version>
         </dependency>
-        <dependency>
-        	<groupId>org.jboss.as</groupId>
-        	<artifactId>jboss-as-controller-client</artifactId>
-        	<version>7.2.0.Final</version>
-        </dependency>
+ 
+ 		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-controller-client -->
+		<dependency>
+		    <groupId>org.wildfly.core</groupId>
+		    <artifactId>wildfly-controller-client</artifactId>
+		    <version>${version.wildfly-controller-client}</version>
+		</dependency>
+		
+		
+		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-core-management-client -->
+		<dependency>
+		    <groupId>org.wildfly.core</groupId>
+		    <artifactId>wildfly-core-management-client</artifactId>
+		    <version>${version.wildfly-core-management-client}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-protocol -->
+		<dependency>
+		    <groupId>org.wildfly.core</groupId>
+		    <artifactId>wildfly-protocol</artifactId>
+		    <version>${version.wildfly-protocol}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-controller -->
+		<dependency>
+		    <groupId>org.wildfly.core</groupId>
+		    <artifactId>wildfly-controller</artifactId>
+		    <version>${version.wildfly-controller}</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.wildfly.core/wildfly-cli -->
+		<dependency>
+		    <groupId>org.wildfly.core</groupId>
+		    <artifactId>wildfly-cli</artifactId>
+		    <version>${version.wildfly-cli}</version>
+		</dependency>
+		
+
     </dependencies>
+ 
     <build>
         <plugins>
             <plugin>
