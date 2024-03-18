@@ -3,10 +3,19 @@ package fly.wild.wizards.serverside;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.UUID;
+
+import javax.net.ssl.SSLException;
+import javax.security.sasl.SaslException;
+
 import org.jboss.as.controller.client.ModelControllerClient;
 import org.jboss.dmr.ModelNode;
+import org.xnio.http.RedirectException;
+import org.jboss.as.cli.CommandContext;
+import org.jboss.as.cli.CommandContextFactory;
+import org.jboss.as.cli.CommandLineException;
 import org.jboss.as.cli.ControllerAddress;
 import org.jboss.as.cli.Util;
+import org.jboss.as.cli.impl.CommandContextConfiguration;
 import org.jboss.as.cli.impl.ModelControllerClientFactory;
 import org.jboss.as.cli.operation.OperationFormatException;
 import org.jboss.as.cli.operation.impl.DefaultOperationRequestBuilder;
@@ -35,6 +44,14 @@ public class ServerConnector {
 	private final OneWayTLSConfigurationConfiguration oneWayTLSConfiguration;
 	private final TLSConfiguration tlsConfiguration;
 	private final int connectionTimeOut = 5000;
+	private int port = 9990;
+	private String connectionString = "remote+https";
+	/*
+	private int port = 9990;
+	private String connectionString = "remote+http";
+	*/
+	
+	ModelControllerClient client;
 	
 	public ServerConnector(TLSConfiguration tlsConfiguration, OneWayTLSConfigurationConfiguration oneWayTLSConfiguration) {
 		LocalTime localTime = LocalTime.now();
@@ -57,20 +74,61 @@ public class ServerConnector {
 				";" + "L=" + this.oneWayTLSConfiguration.getCityOrLocalityValue() +
 				";" + "ST=" + this.oneWayTLSConfiguration.getStateOrProvinceValue() +
 				";" + "C=" + this.oneWayTLSConfiguration.getCountryCodeValue();
-
 		this.logMessage = new StringBuilder("This is the TLSWizard run of "+localTime.toString()+"\n");
-		connectionAddress = new ControllerAddress("remote+http",ipAddress,9990);	
+		connectionAddress = new ControllerAddress(this.connectionString,ipAddress,this.port);	
 		
 	}
 	
+	private boolean initConnection() {
+		boolean connected = true;
+		try {
+			client = getClientWithNoAuth();
+			DefaultOperationRequestBuilder builder = new DefaultOperationRequestBuilder();
+			builder.setOperationName(Util.READ_ATTRIBUTE);
+			builder.addProperty(Util.NAME, Util.NAME);
+			final ModelNode response = client.execute(builder.buildRequest());
+			if (!Util.isSuccess(response)) {
+				final String failure = Util.getFailureDescription(response);
+				System.out.println (failure);
+			}
+		} catch (Exception e) {
+			connected = false;
+			System.out.println ("Here was the exception");
+			Throwable current = e;
+			current = current.getCause();
+			System.out.println (current.getMessage());
+			while (current != null) {
+				if (current instanceof SaslException) {
+					System.out.println("SaslException: Unable to authenticate against controller");
+				}
+				if (current instanceof SSLException) {
+					System.out.println("SSLExceptionUnable to negotiate SSL connection with controller at ");
+				}
+				if (current instanceof RedirectException) {
+					System.out.println ("RedirectException");
+				}
+				if (current instanceof CommandLineException) {
+					System.out.println ("CommandLineException");
+				}
+				if (current instanceof IOException) {
+					System.out.println ("IOException");
+				}
+				current = current.getCause();
+			}
+		}
+		return connected;
+	}
 	
 	public boolean configureOneWayTLS() {
 		
 		boolean success = true;
-
+		
+		if (initConnection()) {
 		try {
 			
-			ModelControllerClient client = getClientWithNoAuth();
+			System.out.println ("InitConnection is :"+ success);
+			
+			//ModelControllerClient client = getClientWithNoAuth();
 			// Create a key store
 			final ModelNode keytore = client.execute(this.buildKeyStoreNode());
 			this.logMessage.append("Creating a key store\n");
@@ -114,6 +172,12 @@ public class ServerConnector {
 		reloadServer();
 			
 		System.out.println(this.logMessage.toString());
+		
+		} else {
+			success = false;
+			System.out.println ("Could not connect");
+		}
+	
 		return success;
 	}
 	
@@ -134,7 +198,7 @@ public class ServerConnector {
 		System.out.println(undertowBuilder.toString());
 
 		try {
-			ModelControllerClient client = getClientWithNoAuth();
+			//ModelControllerClient client = getClientWithNoAuth();
 			ModelNode undertow = client.execute(undertowBuilder.buildRequest());
 			this.logMessage.append("Updating Undertow\n");
 			this.logMessage.append(undertow.toString()).append("\n");
@@ -165,7 +229,7 @@ public class ServerConnector {
 
 		try {
 			
-			ModelControllerClient client = getClientWithNoAuth();
+			client = getClientWithNoAuth();
 			ModelNode coreService = client.execute(coreServiceSSLContextBuilder.buildRequest());
 			this.logMessage.append("Configuring coreServiceSSLContext services\n");
 			this.logMessage.append(coreService.toString()).append("\n");
@@ -185,9 +249,9 @@ public class ServerConnector {
 		DefaultOperationRequestBuilder reloadBuilder = new DefaultOperationRequestBuilder();
 		reloadBuilder.setOperationName(Util.RELOAD);
 		
-		ModelControllerClient client;
+		//ModelControllerClient client;
 		try {
-			client = getClientWithNoAuth();
+			//client = getClientWithNoAuth();
 			client.execute(reloadBuilder.buildRequest());
 			this.logMessage.append("Server reloaded\n");
 		} catch(IOException | OperationFormatException e) {
@@ -318,4 +382,11 @@ public class ServerConnector {
 	ModelControllerClient getClientWithNoAuth() throws IOException {
 		return ModelControllerClientFactory.CUSTOM.getClient(connectionAddress, null, false, null, false, connectionTimeOut, null, null, null);
 	}
+	
+	/*
+	void fun () {
+		CommandContextConfiguration.Builder ctxBuilder = new CommandContextConfiguration.Builder();
+		
+		CommandContext cmdCtx = CommandContextFactory.getInstance().newCommandContext(ctxConfig);
+	} */
 }
